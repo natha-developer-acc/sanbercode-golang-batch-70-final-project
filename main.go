@@ -11,8 +11,6 @@ import (
 	"sanbercode-golang-batch-70-final-project/routes"
 
 	"github.com/joho/godotenv"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // @title Surat Notifikasi API
@@ -41,10 +39,7 @@ func main() {
 	// ✅ 4. Setup router
 	r := routes.SetupRouter()
 
-	// ✅ 5. Tambahkan endpoint Swagger
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
-	// ✅ 6. Baca PORT dari environment (Railway pakai PORT, bukan APP_PORT)
+	// ✅ 5. Tentukan port
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = os.Getenv("APP_PORT") // fallback kalau di lokal
@@ -53,7 +48,7 @@ func main() {
 		}
 	}
 
-	// ✅ 7. Jalankan server
+	// ✅ 6. Jalankan server
 	fmt.Printf("✅ Server berjalan di http://localhost:%s\n", port)
 	if err := r.Run(":" + port); err != nil {
 		log.Fatalf("❌ Gagal menjalankan server: %v", err)
