@@ -24,32 +24,37 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	// load env
+	// ✅ Load file .env (abaikan jika tidak ditemukan, misal di Railway)
 	if err := godotenv.Load(); err != nil {
-		log.Fatal("Error loading .env file")
+		log.Println(".env file not found — using environment variables from Railway")
 	}
 
-	// init database
+	// ✅ Koneksi ke database
 	config.ConnectDB()
 
-	// ✅ Inisialisasi WhatsApp client di awal (tampilkan QR jika belum login)
+	// ✅ Inisialisasi WhatsApp client (tampilkan QR jika belum login)
 	go func() {
-		fmt.Println("🚀 Inisialisasi WhatsApp client...")
-		notification.SendWhatsApp("6281217741759", "init") // cukup panggil tanpa `_ =`
+		fmt.Println("Inisialisasi WhatsApp client...")
+		notification.SendWhatsApp("init", "init") // aman, hanya trigger
 	}()
 
-	// setup router
+	// ✅ Setup router
 	r := routes.SetupRouter()
 
-	// swagger endpoint
+	// ✅ Swagger endpoint
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
-	// run server
+	// ✅ Cek port (Railway pakai env PORT)
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = os.Getenv("APP_PORT")
+		if port == "" {
+			port = "8080"
+		}
 	}
 
-	fmt.Printf("🌐 Server berjalan di http://localhost:%s\n", port)
-	r.Run(":" + port)
+	fmt.Printf("Server berjalan di http://localhost:%s\n", port)
+	if err := r.Run(":" + port); err != nil {
+		log.Fatalf("Gagal menjalankan server: %v", err)
+	}
 }
