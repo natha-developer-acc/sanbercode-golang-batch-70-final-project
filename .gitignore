@@ -1,0 +1,19 @@
+# Ignore environment files
+.env
+
+# Ignore database files
+*.db
+*.sql
+
+# Ignore WhatsApp QR
+wa_login_qr.png
+
+# Ignore IDE and OS junk
+.vscode/
+.idea/
+.DS_Store
+
+# Go build artifacts
+/bin/
+build/
+dist/
