@@ -1,0 +1,9 @@
+[build]
+builder = "NIXPACKS"
+
+[build.env]
+CGO_ENABLED = "1"
+GO111MODULE = "on"
+
+[start]
+cmd = "go run main.go"
