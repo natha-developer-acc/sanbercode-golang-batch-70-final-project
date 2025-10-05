@@ -1,16 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"log"
-	"os"
+    "fmt"
+    "log"
+    "os"
 
-	"sanbercode-golang-batch-70-final-project/config"
-	_ "sanbercode-golang-batch-70-final-project/docs"
-	"sanbercode-golang-batch-70-final-project/notification"
-	"sanbercode-golang-batch-70-final-project/routes"
+    "sanbercode-golang-batch-70-final-project/config"
+    _ "sanbercode-golang-batch-70-final-project/docs"
+    "sanbercode-golang-batch-70-final-project/notification"
+    "sanbercode-golang-batch-70-final-project/routes"
 
-	"github.com/joho/godotenv"
+    "github.com/joho/godotenv"
 )
 
 // @title Surat Notifikasi API
@@ -22,35 +22,29 @@ import (
 // @in header
 // @name Authorization
 func main() {
-	// ✅ 1. Load file .env (abaikan jika tidak ada, misal di Railway)
-	if err := godotenv.Load(); err != nil {
-		log.Println("[INFO] .env file tidak ditemukan — menggunakan environment variables dari Railway")
-	}
+    // ✅ Load .env (abaikan kalau di Railway)
+    _ = godotenv.Load()
 
-	// ✅ 2. Koneksi ke database
-	config.ConnectDB()
+    // ✅ Koneksi database
+    config.ConnectDB()
 
-	// ✅ 3. Inisialisasi WhatsApp client (trigger login / QR code)
-	go func() {
-		fmt.Println("🚀 Inisialisasi WhatsApp client...")
-		notification.SendWhatsApp("init", "init") // hanya trigger, bukan kirim pesan sungguhan
-	}()
+    // ✅ Inisialisasi WhatsApp client (background)
+    go func() {
+        fmt.Println("🚀 Inisialisasi WhatsApp client...")
+        notification.SendWhatsApp("init", "init")
+    }()
 
-	// ✅ 4. Setup router
-	r := routes.SetupRouter()
+    // ✅ Setup router (Swagger sudah ditangani di routes)
+    r := routes.SetupRouter()
 
-	// ✅ 5. Tentukan port
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = os.Getenv("APP_PORT") // fallback kalau di lokal
-		if port == "" {
-			port = "8080"
-		}
-	}
+    // ✅ Ambil port dari env (Railway wajib pakai PORT)
+    port := os.Getenv("PORT")
+    if port == "" {
+        port = "8080"
+    }
 
-	// ✅ 6. Jalankan server
-	fmt.Printf("✅ Server berjalan di http://localhost:%s\n", port)
-	if err := r.Run(":" + port); err != nil {
-		log.Fatalf("❌ Gagal menjalankan server: %v", err)
-	}
+    fmt.Printf("✅ Server berjalan di port %s\n", port)
+    if err := r.Run(":" + port); err != nil {
+        log.Fatalf("❌ Gagal menjalankan server: %v", err)
+    }
 }
